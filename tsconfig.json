@@ -5,6 +5,7 @@
         "noImplicitAny": false,
         "strict": true,
         "sourceMap": false,
-        "outDir": "bin"
+        "outDir": "bin",
+        "skipLibCheck": true
     }
 }

@@ -1,5 +1,5 @@
 import * as ts_module from 'typescript/lib/tsserverlibrary';
-import { parseComponent } from 'vue-template-compiler';
+import { parse as parseComponent} from '@vue/compiler-sfc';
 import path = require('path');
 
 function isVue(filename: string): boolean {
@@ -12,7 +12,7 @@ function isVueProject(path: string) {
 
 function parse(text: string) {
   const output = parseComponent(text, { pad: "space" });
-  return output && output.script && output.script.content || 'export default {}';
+  return output && output.descriptor && output.descriptor.script && output.descriptor.script.content || 'export default {}';
 }
 
 let clssf: typeof ts_module.createLanguageServiceSourceFile;
@@ -141,15 +141,17 @@ function init({ typescript: ts } : {typescript: typeof ts_module}) {
       //logger.info(exportDefaultObject.toString());
       const vueImport = b(ts.createImportDeclaration(undefined,
                                                      undefined,
-      b(ts.createImportClause(b(ts.createIdentifier("Vue")), undefined)),
+      b(ts.createImportClause(undefined, b(ts.createNamedImports([
+        b(ts.createImportSpecifier(undefined,b(ts.createIdentifier("defineComponent"))))
+      ])))),
       b(ts.createLiteral("vue"))));
       statements.unshift(vueImport);
       const obj = (exportDefaultObject as ts.ExportAssignment).expression as ts.ObjectLiteralExpression;
-      (exportDefaultObject as ts.ExportAssignment).expression = ts.setTextRange(ts.createNew(ts.setTextRange(ts.createIdentifier("Vue"), { pos: obj.pos, end: obj.pos + 1 }),
+      (exportDefaultObject as ts.ExportAssignment).expression = ts.setTextRange(ts.createCall(ts.setTextRange(ts.createIdentifier("defineComponent"), { pos: obj.pos, end: obj.pos + 1 }),
                                                                                              undefined,
       [obj]),
       obj);
-      ts.setTextRange(((exportDefaultObject as ts.ExportAssignment).expression as ts.NewExpression).arguments!, obj);
+      ts.setTextRange(((exportDefaultObject as ts.ExportAssignment).expression as ts.CallExpression).arguments!, obj);
     }
   }
 

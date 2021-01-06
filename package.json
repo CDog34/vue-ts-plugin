@@ -25,10 +25,10 @@
   },
   "homepage": "https://github.com/HerringtonDarkholme/vue-ts-plugin#readme",
   "devDependencies": {
-    "@types/node": "^7.0.5",
+    "@types/node": "7.0.5",
     "typescript": "^2.7.0"
   },
   "peer-dependencies": {
-    "vue-template-compiler": "*"
+    "@vue/compiler-sfc": "*"
   }
 }
